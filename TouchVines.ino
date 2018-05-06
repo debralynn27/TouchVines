@@ -1,9 +1,11 @@
 
 #include "FastLED.h"
 #define NUM_LEDS 50
-#define ledpin 11
+#define LEDPIN 11
 #define BRIGHTNESS  255
 #define FRAMES_PER_SECOND 140
+#define PIRPIN 4
+
 
 CRGB leds[NUM_LEDS];
 // Intervals
@@ -12,13 +14,25 @@ unsigned long firstInterval = 1000UL;
 unsigned long secondInterval = 3000UL;
 unsigned long thirdInterval = 6000UL;
 
+int val = 1;
+
 
 void setup() {
- FastLED.addLeds<WS2811,ledpin,RGB>(leds,NUM_LEDS);
+ FastLED.addLeds<WS2811,LEDPIN,RGB>(leds,NUM_LEDS);
+ pinMode(PIRPIN, INPUT); 
+ Serial.begin(9600);
 }
 
 void loop() {
-  ambient();
+  val = digitalRead(PIRPIN);  // read input value
+  if (val == HIGH)  {
+    fill_solid(leds, NUM_LEDS, CRGB::Blue);
+    Serial.println(val);
+   }
+  else {
+    fill_solid(leds, NUM_LEDS, CRGB::Red);
+    Serial.println(val);
+   }
   FastLED.show();  
 }
 
