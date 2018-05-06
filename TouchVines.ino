@@ -26,10 +26,19 @@ void setup() {
 void loop() {
     val = digitalRead(PIR_PIN); 
     if (val == HIGH)   {
-    fill_solid(leds, NUM_LEDS, CRGB::Blue);
-   }
+        if((millis() - startTime) < firstInterval)
+            { aquapaint();
+        addGlitter(80);
+            } else if ((millis() - startTime) < secondInterval) {
+        trailoff1();
+            } else if ((millis() - startTime) < thirdInterval) {
+        trailoff2();
+            } else {
+            
+            }}
   else {
     ambient ();
+    startTime = millis();
    }
   FastLED.show();  
 }
@@ -45,4 +54,35 @@ void ambient()
       leds[i] = CHSV(0, 0, ambientLow);    
     }
   }
+}
+
+void aquapaint (){
+    for( int i = 0; i < NUM_LEDS; i++) {
+    float fractionOfTheWayAlongTheStrip = (float)i / (float)(NUM_LEDS-1);
+    uint8_t amountOfBlending = fractionOfTheWayAlongTheStrip * 255;
+    CRGB pixelColor = blend( CHSV(100, 255, 255),  CHSV(130, 255, 255), amountOfBlending);
+    leds[i] = pixelColor;
+  }
+}
+
+void addGlitter(fract8 chanceOfGlitter) 
+{
+  if( random8() < chanceOfGlitter) {
+    CRGB pixelColor = blend( CHSV(100, 255, 255),  CHSV(130, 255, 255), 120);
+    leds[ random16(NUM_LEDS) ] += pixelColor;
+  }
+}
+
+void trailoff1() {
+    for( int i = 0; i < NUM_LEDS; i++) {
+     leds[i].fadeLightBy(64);
+    }
+     addGlitter(30); 
+}
+
+void trailoff2() {
+     for( int i = 0; i < NUM_LEDS; i++) {
+       leds[i].fadeLightBy(64);
+    }
+     addGlitter(10); 
 }
